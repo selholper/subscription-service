@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -8,11 +9,13 @@ import (
 )
 
 type Config struct {
-	DSN string
+	DSN      string
+	HTTPPort string
+	LogLevel string
 }
 
 func Load(envPath string) (*Config, error) {
-	if err := godotenv.Load(envPath); err != nil {
+	if err := godotenv.Load(envPath); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, fmt.Errorf("loading .env file: %w", err)
 	}
 
@@ -32,5 +35,19 @@ func Load(envPath string) (*Config, error) {
 		host, port, user, password, dbname, sslmode,
 	)
 
-	return &Config{DSN: dsn}, nil
+	httpPort := os.Getenv("HTTP_PORT")
+	if httpPort == "" {
+		httpPort = "8080"
+	}
+
+	logLevel := os.Getenv("LOG_LEVEL")
+	if logLevel == "" {
+		logLevel = "info"
+	}
+
+	return &Config{
+		DSN:      dsn,
+		HTTPPort: httpPort,
+		LogLevel: logLevel,
+	}, nil
 }
