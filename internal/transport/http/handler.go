@@ -105,7 +105,7 @@ func (h *SubscriptionHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req dto.UpdateSubscriptionRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err = json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, h.logger, http.StatusBadRequest, "invalid request body")
 		return
 	}
@@ -229,7 +229,8 @@ func (h *SubscriptionHandler) TotalCost(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if raw := q.Get("user_id"); raw != "" {
-		uid, err := uuid.Parse(raw)
+		var uid uuid.UUID
+		uid, err = uuid.Parse(raw)
 		if err != nil {
 			writeError(w, h.logger, http.StatusBadRequest, "invalid user_id")
 			return

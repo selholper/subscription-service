@@ -67,14 +67,16 @@ func buildSubscription(
 		return nil, ErrInvalidUserID
 	}
 
-	start, err := time.Parse(DateLayout, startDate)
+	var start time.Time
+	start, err = time.Parse(DateLayout, startDate)
 	if err != nil {
 		return nil, ErrInvalidStartDate
 	}
 
 	var end *time.Time
 	if endDate != nil && *endDate != "" {
-		parsed, err := time.Parse(DateLayout, *endDate)
+		var parsed time.Time
+		parsed, err = time.Parse(DateLayout, *endDate)
 		if err != nil {
 			return nil, ErrInvalidEndDate
 		}
